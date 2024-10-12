@@ -1,0 +1,50 @@
+import csv
+import re
+from datetime import datetime
+ 
+# Input list of files
+files = [
+    "+12027391481 - Text - 2021-06-13T19_50_44Z.html",
+    "+12027391481 - Missed - 2021-01-05T16_20_59Z.html",
+    "+12027391481 - Received - 2015-03-16T16_01_46Z.html"
+]
+ 
+# Function to parse category and received status
+def parse_file_info(file_name):
+    parts = file_name.split(" - ")
+    number = parts[0]
+    category = parts[1]
+    date_str = parts[2].replace(".html", "").replace("_", ":")
+ 
+    # Parse the category into Text or Phone
+    if category == "Text":
+        category_value = "Text"
+        received_value = "Null"
+    elif category == "Received":
+        category_value = "Phone"
+        received_value = "True"
+    elif category == "Missed":
+        category_value = "Phone"
+        received_value = "False"
+    else:
+        category_value = "Unknown"
+        received_value = "Null"
+ 
+    # Convert date to ISO format
+    date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+    date_iso = date_obj.isoformat()
+ 
+    return [number, category_value, received_value, date_iso]
+ 
+# Prepare the CSV output
+with open("output.csv", "w", newline="") as csvfile:
+    csvwriter = csv.writer(csvfile)
+    # Write the header
+    csvwriter.writerow(["Number", "Category", "Received", "Date"])
+ 
+    # Write each parsed file info
+    for file in files:
+        csvwriter.writerow(parse_file_info(file))
+ 
+print("CSV file created successfully.")
+ 
