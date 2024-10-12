@@ -87,15 +87,15 @@ This document outlines the steps I have performed so far in setting up the Googl
 
 - **Install Beautiful Soup**:
     7. Use the following command to install Beautiful Soup to your instance:
-      ```bash
-      pip3 install boto3 beautifulsoup4
-      ```
+    ```bash
+    pip3 install boto3 beautifulsoup4
+    ```
 
 - **Clone the GitHub repository**:
     8. Use the following command to clone the GitHub repository to your instance:
-      ```bash
-      git clone https://github.com/your-username/your-repository.git
-      ```
+    ```bash
+    git clone https://github.com/your-username/your-repository.git
+    ```
 
 - **Navigate into the cloned repository**:
     9. Use the following command to Navigate into the cloned repository in your instance:
