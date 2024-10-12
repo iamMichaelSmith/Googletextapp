@@ -60,22 +60,22 @@ This document outlines the steps I have performed so far in setting up the Googl
      ```
 
      
- ##Update the Server
+ - **Update the Server**:
   ```bash
- sudo apt update && sudo apt upgrade -y
-```
+   3. sudo apt update && sudo apt upgrade -y
+  ```
  
- ##Install latest version of Nodejs
- ```bash
- sudo apt install -y nodejs
-```
+ - **Install latest version of Nodejs**:
+   ```bash
+   4. sudo apt install -y nodejs
+   ```
 
-##Install Python
+- **Install Python**:
 ```bash
 sudo apt install -y python3 python3-pip
 ```
 
-#Install Git
-```bash
+- **Install Git**:
+  ```bash
 sudo apt install -y git
-```
+  ```
