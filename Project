@@ -1,0 +1,11 @@
+ ##Update the Server
+ sudo apt update && sudo apt upgrade -y
+ 
+ ##Install latest version of Nodejs
+ sudo apt install -y nodejs
+
+##Install Python
+sudo apt install -y python3 python3-pip
+
+#Install Git
+sudo apt install -y git
