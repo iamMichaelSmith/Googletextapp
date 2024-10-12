@@ -60,7 +60,7 @@ This document outlines the steps I have performed so far in setting up the Googl
      ssh -i "YOUR-DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
      ```
 
-- **Update & Ubgrade the instance**:
+- **Update & Upgrade the instance**:
    3. Use the following command to update & upgrade your instance:
   ```bash
   sudo apt update && sudo apt upgrade -y
@@ -68,9 +68,9 @@ This document outlines the steps I have performed so far in setting up the Googl
 
      - **Install latest version of Nodejs**:
     4. Use the following command to install Nodejs to your instance:
-      ```bash
-      sudo apt install -y nodejs
-      ```
+     ```bash
+     sudo apt install -y nodejs
+     ```
 
  - **Install latest version of Python**:
     5. Use the following command to install Python to your instance:
