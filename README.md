@@ -37,6 +37,7 @@ This document outlines the steps I have performed so far in setting up the Googl
   7. Review your settings and click **Launch**.
   8. **Create or select a key pair** (e.g., `googletextapp.pem`) to access your instance.
   9. Click **Launch Instances** to finalize.
+  10. Create IAM Role for EC2 to have full access to Dynamo DB and S3
 
 
 
@@ -85,20 +86,21 @@ This document outlines the steps I have performed so far in setting up the Googl
       ```
 
 - **Install Beautiful Soup**:
-    y. Use the following command to install Beautiful Soup to your instance:
+    7. Use the following command to install Beautiful Soup to your instance:
       ```bash
       pip3 install boto3 beautifulsoup4
       ```
 
 - **Clone the GitHub repository**:
-    y. Use the following command to clone the GitHub repository to your instance:
+    8. Use the following command to clone the GitHub repository to your instance:
       ```bash
       git clone https://github.com/your-username/your-repository.git
-
       ```
 
-Navigate into the cloned repository :
-
-cd your-repository
+- **Navigate into the cloned repository**:
+    9. Use the following command to Navigate into the cloned repository in your instance:
+      ```bash
+      cd your-repository-name
+      ```
 
 Create IAM Role for EC2 to have full access to Dynamo DB and S3
