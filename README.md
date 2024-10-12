@@ -38,12 +38,6 @@ This document outlines the steps I have performed so far in setting up the Googl
   8. **Create or select a key pair** (e.g., `googletextapp.pem`) to access your instance.
   9. Click **Launch Instances** to finalize.
 
-- **Connect to the EC2 Instance**:
-  1. Open a terminal or command prompt.
-  2. Use the following command to SSH into your instance:
-     ```bash
-     ssh -i "DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
-     ```
 
 ### 3. Create S3 Bucket: `google-voice-data`
 - **Access S3 Dashboard**:
@@ -58,14 +52,30 @@ This document outlines the steps I have performed so far in setting up the Googl
   6. Click **Create bucket** to finalize.
 
 
+- **Connect to the EC2 Instance**:
+  1. Open a terminal or command prompt.
+  2. Use the following command to SSH into your instance:
+     ```bash
+     ssh -i "DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
+     ```
+
+     
  ##Update the Server
+  ```bash
  sudo apt update && sudo apt upgrade -y
+```
  
  ##Install latest version of Nodejs
+ ```bash
  sudo apt install -y nodejs
+```
 
 ##Install Python
+```bash
 sudo apt install -y python3 python3-pip
+```
 
 #Install Git
+```bash
 sudo apt install -y git
+```
