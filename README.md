@@ -67,7 +67,7 @@ This document outlines the steps I have performed so far in setting up the Googl
   sudo apt update && sudo apt upgrade -y
   ```
 
-     - **Install latest version of Nodejs**:
+ - **Install latest version of Nodejs**:
     4. Use the following command to install Nodejs to your instance:
      ```bash
      sudo apt install -y nodejs
