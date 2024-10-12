@@ -1,13 +1,14 @@
+
 # Google Voice Text Application Setup
 
 ## Overview
-This document outlines the steps performed in setting up the Google Voice Text Application project. The steps include creating a DynamoDB table, an EC2 instance with Ubuntu, and an S3 bucket. Currently, the project is at the point of cloning the repository.
+This document outlines the steps I have performed so far in setting up the Google Voice Text Application project. The steps include creating a DynamoDB table, an EC2 instance with Ubuntu, and an S3 bucket. Currently, I am at the point of cloning the repository.
 
 ## Steps Completed
 
 ### 1. Create DynamoDB Table: `googlevoicetext`
 - **Log in to AWS Management Console**:
-  1. Navigate to the AWS Management Console.
+  1. Navigate to the [AWS Management Console](https://aws.amazon.com/console/).
   2. Log in with your credentials.
 
 - **Access DynamoDB**:
@@ -37,6 +38,8 @@ This document outlines the steps performed in setting up the Google Voice Text A
   8. **Create or select a key pair** (e.g., `googletextapp.pem`) to access your instance.
   9. Click **Launch Instances** to finalize.
 
+
+
 ### 3. Create S3 Bucket: `google-voice-data`
 - **Access S3 Dashboard**:
   1. From the services menu, select **S3**.
@@ -49,14 +52,22 @@ This document outlines the steps performed in setting up the Google Voice Text A
   5. Set permissions (public access settings should be configured based on your use case).
   6. Click **Create bucket** to finalize.
 
-### 4. Connect to the EC2 Instance and Set Up Environment
+
 - **Connect to the EC2 Instance**:
   1. Open a terminal or command prompt.
   2. Use the following command to SSH into your instance:
      ```bash
-     ssh -i "DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
+     ssh -i "YOUR-DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
      ```
+     
+ ##Update the Server
+ sudo apt update && sudo apt upgrade -y
+ 
+ ##Install latest version of Nodejs
+ sudo apt install -y nodejs
 
-- **Update the Server**:
-  ```bash
-  sudo apt update && sudo apt upgrade -y
+##Install Python
+sudo apt install -y python3 python3-pip
+
+#Install Git
+sudo apt install -y git
