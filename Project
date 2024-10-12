@@ -1,71 +1,73 @@
+import boto3
+from botocore.exceptions import ClientError
+from bs4 import BeautifulSoup
+import os
+import logging
+from datetime import datetime
 
-# Google Voice Text Application Setup
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
 
-## Overview
-This document outlines the steps I have performed so far in setting up the Google Voice Text Application project. The steps include creating a DynamoDB table, an EC2 instance with Ubuntu, and an S3 bucket. Currently, I am at the point of cloning the repository.
+# Initialize DynamoDB resource
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('TextMessages')  # Your DynamoDB table name
 
-## Steps Completed
+def process_message(log):
+    """Extract and return message data from a BeautifulSoup object."""
+    try:
+        timestamp = log.find('abbr', class_='dt')['title']
+        sender = log.find('cite', class_='sender vcard').find('a', class_='tel')
+        phone_number = sender['href'].replace('tel:', '') if sender else "Unknown"
+        return {
+            'PhoneNumber': phone_number,
+            'Timestamp': timestamp,
+            'Message': message_text
+        }
+    except AttributeError as e:
+        logger.error(f"Error processing message: {e}")
+        return None
 
-### 1. Create DynamoDB Table: `googlevoicetext`
-- **Log in to AWS Management Console**:
-  1. Navigate to the [AWS Management Console](https://aws.amazon.com/console/).
-  2. Log in with your credentials.
+def insert_into_dynamodb(item):
+    """Insert an item into DynamoDB table."""
+    try:
+        table.put_item(Item=item)
+    except ClientError as e:
+        logger.error(f"Error inserting into DynamoDB: {e}")
 
-- **Access DynamoDB**:
-  1. In the services menu, find and click on **DynamoDB**.
+def process_file(file_path):
+    """Process a single HTML file and insert messages into DynamoDB."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        soup = BeautifulSoup(content, 'html.parser')
+        chat_logs = soup.find_all('div', class_='message')
+        
+        for log in chat_logs:
+            item = process_message(log)
+            if item:
+                insert_into_dynamodb(item)
+        
+        logger.info(f"Processed {file_path}")
+    except Exception as e:
+        logger.error(f"Error processing file {file_path}: {e}")
 
-- **Create Table**:
-  1. Click on **Create table**.
-  2. Enter the **Table name**: `googlevoicetext`.
-  3. Set the **Primary key** (e.g., `id` of type String).
-  4. Configure additional settings as necessary (e.g., provisioned read/write capacity).
-  5. Click **Create** to finalize the creation of the table.
+def main():
+    """Main function to process all HTML files in the specified directory."""
+es/'  # Update this path
+    start_time = datetime.now()
+    logger.info(f"Starting processing at {start_time}")
 
-### 2. Create EC2 Instance: `google textapp`
-- **Access EC2 Dashboard**:
-  1. From the services menu, select **EC2**.
+    try:
+        for file_name in os.listdir(data_dir):
+            if file_name.endswith('.html'):
+                process_file(os.path.join(data_dir, file_name))
+    except Exception as e:
+        logger.error(f"Error processing directory {data_dir}: {e}")
 
-- **Launch Instance**:
-  1. Click on **Launch instance**.
-  2. Choose an **Amazon Machine Image (AMI)** (select **Ubuntu**).
-  3. Select an **Instance Type** (e.g., t2.micro for free tier).
-  4. Configure instance details, such as the number of instances and network settings (use a default VPC).
-  5. Add **Storage** (default is usually sufficient).
-  6. **Configure Security Group**:
-     - Allow SSH access (port 22) from your IP.
-     - Add any additional rules for your application (e.g., HTTP, HTTPS).
-  7. Review your settings and click **Launch**.
-  8. **Create or select a key pair** (e.g., `googletextapp.pem`) to access your instance.
-  9. Click **Launch Instances** to finalize.
+    end_time = datetime.now()
+    logger.info(f"Finished processing at {end_time}")
+    logger.info(f"Total processing time: {end_time - start_time}")
 
-- **Connect to the EC2 Instance**:
-  1. Open a terminal or command prompt.
-  2. Use the following command to SSH into your instance:
-     ```bash
-     ssh -i "C:/Users/Blak Marigold Pro/Desktop/googletextapp.pem" ubuntu@<your-instance-public-ip>
-     ```
-
-### 3. Create S3 Bucket: `google-voice-data`
-- **Access S3 Dashboard**:
-  1. From the services menu, select **S3**.
-
-- **Create Bucket**:
-  1. Click on **Create bucket**.
-  2. Enter the **Bucket name**: `google-voice-data`.
-  3. Choose a region (ensure it's the same region as your DynamoDB table and EC2 instance).
-  4. Configure options such as versioning or logging as needed.
-  5. Set permissions (public access settings should be configured based on your use case).
-  6. Click **Create bucket** to finalize.
-
-
- ##Update the Server
- sudo apt update && sudo apt upgrade -y
- 
- ##Install latest version of Nodejs
- sudo apt install -y nodejs
-
-##Install Python
-sudo apt install -y python3 python3-pip
-
-#Install Git
-sudo apt install -y git
+if __name__ == "__main__":
+    main()
