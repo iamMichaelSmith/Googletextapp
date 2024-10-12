@@ -42,7 +42,7 @@ This document outlines the steps I have performed so far in setting up the Googl
   1. Open a terminal or command prompt.
   2. Use the following command to SSH into your instance:
      ```bash
-     ssh -i "C:/Users/Blak Marigold Pro/Desktop/googletextapp.pem" ubuntu@<your-instance-public-ip>
+     ssh -i "DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
      ```
 
 ### 3. Create S3 Bucket: `google-voice-data`
