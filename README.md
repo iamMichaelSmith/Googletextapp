@@ -52,6 +52,7 @@ This document outlines the steps I have performed so far in setting up the Googl
   4. Configure options such as versioning or logging as needed.
   5. Set permissions (public access settings should be configured based on your use case).
   6. Click **Create bucket** to finalize.
+  7. Upload Google Takeout (Calls) data to the S3 bucket.
 
 
 - **Connect to the EC2 Instance**:
