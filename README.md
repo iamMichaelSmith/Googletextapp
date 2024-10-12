@@ -90,5 +90,13 @@ This document outlines the steps I have performed so far in setting up the Googl
       pip3 install boto3 beautifulsoup4
       ```
 
+- **Clone the GitHub repository**:
+    y. Use the following command to clone the GitHub repository to your instance:
+      ```bash
+      git clone https://github.com/your-username/your-repository.git
 
+      ```
 
+Navigate into the cloned repository :
+
+cd your-repository
