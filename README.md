@@ -59,6 +59,13 @@ This document outlines the steps I have performed so far in setting up the Googl
      ```bash
      ssh -i "YOUR-DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
      ```
+
+- **Update & Ubgrade the instance**:
+  1. Open a terminal or command prompt.
+  2. Use the following command to update & upgrade your instance:
+     ```bash
+     sudo apt update && sudo apt upgrade -y
+     ```
      
  ##Update the Server
  sudo apt update && sudo apt upgrade -y
