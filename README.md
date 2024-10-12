@@ -62,9 +62,9 @@ This document outlines the steps I have performed so far in setting up the Googl
 
 - **Update & Ubgrade the instance**:
    3. Use the following command to update & upgrade your instance:
-      ```bash
-      sudo apt update && sudo apt upgrade -y
-      ```
+  ```bash
+  sudo apt update && sudo apt upgrade -y
+  ```
 
      - **Install latest version of Nodejs**:
     4. Use the following command to install Nodejs to your instance:
