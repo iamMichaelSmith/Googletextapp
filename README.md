@@ -100,3 +100,5 @@ This document outlines the steps I have performed so far in setting up the Googl
 Navigate into the cloned repository :
 
 cd your-repository
+
+Create IAM Role for EC2 to have full access to Dynamo DB and S3
