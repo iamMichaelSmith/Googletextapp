@@ -84,5 +84,11 @@ This document outlines the steps I have performed so far in setting up the Googl
       sudo apt install -y git
       ```
 
+- **Install Beautiful Soup**:
+    y. Use the following command to install Beautiful Soup to your instance:
+      ```bash
+      pip3 install boto3 beautifulsoup4
+      ```
+
 
 
