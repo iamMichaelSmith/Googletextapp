@@ -61,20 +61,28 @@ This document outlines the steps I have performed so far in setting up the Googl
      ```
 
 - **Update & Ubgrade the instance**:
-  1. Open a terminal or command prompt.
-  2. Use the following command to update & upgrade your instance:
+   3. Use the following command to update & upgrade your instance:
      ```bash
      sudo apt update && sudo apt upgrade -y
      ```
-     
- ##Update the Server
- sudo apt update && sudo apt upgrade -y
- 
- ##Install latest version of Nodejs
- sudo apt install -y nodejs
 
-##Install Python
-sudo apt install -y python3 python3-pip
+     - **Install latest version of Nodejs**:
+    4. Use the following command to install Nodejs to your instance:
+     ```bash
+     sudo apt install -y nodejs
+     ```
 
-#Install Git
-sudo apt install -y git
+ - **Install latest version of Python**:
+    5. Use the following command to install Python to your instance:
+     ```bash
+     sudo apt install -y python3 python3-pip
+     ```
+
+ - **Install latest version of Git**:
+    6. Use the following command to install Git to your instance:
+     ```bash
+     sudo apt install -y git
+     ```
+
+
+
