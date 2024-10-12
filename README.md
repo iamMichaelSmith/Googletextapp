@@ -56,9 +56,9 @@ This document outlines the steps I have performed so far in setting up the Googl
 - **Connect to the EC2 Instance**:
   1. Open a terminal or command prompt.
   2. Use the following command to SSH into your instance:
-     ```bash
-     ssh -i "YOUR-DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
-     ```
+    ```bash
+    ssh -i "YOUR-DIRECTORY-OF-YOUR-PEM-FILE" ubuntu@<your-instance-public-ip>
+    ```
 
 - **Update & Upgrade the instance**:
    3. Use the following command to update & upgrade your instance:
