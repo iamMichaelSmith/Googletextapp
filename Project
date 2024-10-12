@@ -1,17 +1,22 @@
 import boto3
 from botocore.exceptions import ClientError
 from bs4 import BeautifulSoup
-import os
 import logging
 from datetime import datetime
+from io import BytesIO
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
-# Initialize DynamoDB resource
+# Initialize AWS services
+s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('TextMessages')  # Your DynamoDB table name
+
+# S3 bucket details
+BUCKET_NAME = 'XXXXXXXXXXXXXXXXX'
+PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
 def process_message(log):
     """Extract and return message data from a BeautifulSoup object."""
@@ -35,35 +40,42 @@ def insert_into_dynamodb(item):
     except ClientError as e:
         logger.error(f"Error inserting into DynamoDB: {e}")
 
-def process_file(file_path):
-    """Process a single HTML file and insert messages into DynamoDB."""
+def process_file(file_content):
+    """Process a single HTML file content and insert messages into DynamoDB."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        soup = BeautifulSoup(content, 'html.parser')
+        soup = BeautifulSoup(file_content, 'html.parser')
         chat_logs = soup.find_all('div', class_='message')
         
         for log in chat_logs:
             item = process_message(log)
             if item:
                 insert_into_dynamodb(item)
-        
-        logger.info(f"Processed {file_path}")
     except Exception as e:
-        logger.error(f"Error processing file {file_path}: {e}")
+        logger.error(f"Error processing file content: {e}")
 
 def main():
-    """Main function to process all HTML files in the specified directory."""
-es/'  # Update this path
+    """Main function to process all HTML files in the S3 bucket."""
     start_time = datetime.now()
     logger.info(f"Starting processing at {start_time}")
 
     try:
-        for file_name in os.listdir(data_dir):
-            if file_name.endswith('.html'):
-                process_file(os.path.join(data_dir, file_name))
+        # List objects in the S3 bucket
+        paginator = s3.get_paginator('list_objects_v2')
+        pages = paginator.paginate(Bucket=BUCKET_NAME, Prefix=PREFIX)
+
+        for page in pages:
+            for obj in page.get('Contents', []):
+                if obj['Key'].endswith('.html'):
+                    logger.info(f"Processing file: {obj['Key']}")
+                    # Get the file content
+                    file_obj = s3.get_object(Bucket=BUCKET_NAME, Key=obj['Key'])
+                    file_content = file_obj['Body'].read()
+                    
+                    # Process the file content
+                    process_file(file_content)
+
     except Exception as e:
-        logger.error(f"Error processing directory {data_dir}: {e}")
+        logger.error(f"Error processing S3 bucket: {e}")
 
     end_time = datetime.now()
     logger.info(f"Finished processing at {end_time}")
