@@ -99,7 +99,7 @@ This document outlines the steps I have performed so far in setting up the Googl
 
 - **Navigate into the cloned repository**:
     9. Use the following command to Navigate into the cloned repository in your instance:
-      ```bash
-      cd your-repository-name
-      ```
+     ```bash
+     cd your-repository-name
+     ```
 
