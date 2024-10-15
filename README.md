@@ -109,6 +109,17 @@ For projects that involve data processing or analysis of communication patterns,
     pip3 install boto3 beautifulsoup4
     ```
 
+    - **Install Parse Feeder**:
+    7. Use the following command to install Parsefeeder to your instance:
+    ```bash
+    pip install boto3 requests feedparser
+    pip install feedparser
+    pip list
+
+
+
+    ```
+
     - **Install AWS CLI**:
     8. Use the following command to install AWS CLI to your instance:
     ```bash
