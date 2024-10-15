@@ -1,6 +1,9 @@
 import os
 import boto3
 from botocore.exceptions import ClientError
+import requests
+import random
+import feedparser
 import logging
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -76,7 +79,7 @@ def extract_info_from_html(html_content, key):
         category = 'Unknown'
         duration = None
     
-    # Determine if received or not (you might need to adjust this based on your HTML structure)
+    # Determine if received or not
     received = 'Received' in key
     
     return {
@@ -85,7 +88,7 @@ def extract_info_from_html(html_content, key):
         'Category': category,
         'Duration': duration,
         'Message': message,
-        'Received': received
+        'Received': 'Yes' if received else 'No'
     }
 
 def process_file(key):
@@ -106,8 +109,11 @@ def process_file(key):
             table.put_item(Item=data)
             logger.info(f"Processed and updated data for PhoneNumber: {data['PhoneNumber']}")
             return True
+        elif 'audio/mpeg' in content_type or key.lower().endswith('.mp3'):
+            logger.info(f"Found MP3 file: {key}")
+            return False
         else:
-            logger.warning(f"Skipping non-HTML file: {key}")
+            logger.warning(f"Skipping unknown file type: {key}")
             return False
 
     except UnicodeDecodeError:
@@ -115,7 +121,7 @@ def process_file(key):
     except ClientError as e:
         logger.warning(f"Error accessing file {key}: {e}")
     except Exception as e:
-        logger.warning(f"Unexpected error processing file {key}: {e}")
+        logger.error(f"Unexpected error processing file {key}: {str(e)}")
     
     return False
 
