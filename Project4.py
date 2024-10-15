@@ -86,11 +86,15 @@ def process_file(key):
     """Process a single file from S3."""
     try:
         response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
-        content_type = response['ContentType']
+        content_type = response.get('ContentType', '')
 
-        if 'html' in content_type:
+        if 'html' in content_type.lower():
             file_content = response['Body'].read().decode('utf-8')
             data = extract_info_from_html(file_content, key)
+            
+            if not data['PhoneNumber'] or not data['Timestamp']:
+                logger.warning(f"Skipping file {key}: Missing PhoneNumber or Timestamp")
+                return False
             
             # Update DynamoDB
             table.update_item(
