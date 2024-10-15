@@ -70,28 +70,7 @@ For projects that involve data processing or analysis of communication patterns,
   6. Click **Create bucket** to finalize.
   7. Upload Google Takeout (Calls) data to the S3 bucket.
   8. Set bucket permission to allow "ListBucket & GetObject"
-     ```bash
-     {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:user/YOUR_USERNAME"  // Replace with your account ID and user name
-            },
-            "Action": [
-                "s3:ListBucket",
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::google-voice-data",
-                "arn:aws:s3:::google-voice-data/*"
-            ]
-        }
-    ]
-}
-```
-
+  
 
 - **Connect to the EC2 Instance**:
   1. Open a terminal or command prompt.
