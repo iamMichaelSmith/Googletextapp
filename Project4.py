@@ -8,13 +8,14 @@ import feedparser
 import logging
 from datetime import datetime
 from boto3.dynamodb.conditions import Attr
+from bs4 import BeautifulSoup
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
 # S3 bucket details
-BUCKET_NAME = 'google-voice-data'
+BUCKET_NAME = 'XXXXXXXXXXXXXXXXX'
 REGION_NAME = 'us-east-1'  # Replace with your actual region if different
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
@@ -53,34 +54,68 @@ def list_s3_objects():
         logger.error(f"Error listing objects in bucket {BUCKET_NAME}: {e}")
         return None
 
+def extract_info_from_html(html_content, key):
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # Extract phone number from filename
+    phone_number = key.split(' - ')[0].strip('+')
+    
+    # Extract timestamp
+    timestamp_elem = soup.find('div', class_='timestamp')
+    timestamp = timestamp_elem.text.strip() if timestamp_elem else None
+    
+    # Extract message or duration
+    message_elem = soup.find('div', class_='message-content')
+    duration_elem = soup.find('div', class_='duration')
+    
+    if message_elem:
+        content = message_elem.text.strip()
+        call_type = 'Text'
+    elif duration_elem:
+        content = duration_elem.text.strip()
+        call_type = 'Call'
+    else:
+        content = None
+        call_type = 'Unknown'
+    
+    return {
+        'PhoneNumber': phone_number,
+        'Timestamp': timestamp,
+        'Content': content,
+        'Type': call_type
+    }
+
 def process_file(key):
     """Process a single file from S3."""
     try:
         response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
         content_type = response['ContentType']
+        file_content = response['Body'].read().decode('utf-8')
 
-        if 'text' in content_type or 'json' in content_type:
-            file_content = response['Body'].read().decode('utf-8')
+        if 'json' in content_type:
             data = json.loads(file_content)
-            
-            # Check if the phone number already exists
-            phone_number = data.get('PhoneNumber')
-            if phone_number:
-                existing_item = table.get_item(Key={'PhoneNumber': phone_number})
-                if 'Item' not in existing_item:
-                    # Phone number doesn't exist, insert the new item
-                    table.put_item(Item=data)
-                    logger.info(f"Inserted new item for phone number: {phone_number}")
-                    return True
-                else:
-                    logger.info(f"Skipped duplicate phone number: {phone_number}")
-            else:
-                logger.warning(f"Skipping file {key}: No PhoneNumber found in data")
+        elif 'html' in content_type:
+            data = extract_info_from_html(file_content, key)
         else:
-            logger.warning(f"Skipping non-text file: {key}")
+            logger.warning(f"Skipping unsupported file type: {key}")
+            return False
+
+        # Check if the phone number already exists
+        phone_number = data.get('PhoneNumber')
+        if phone_number:
+            existing_item = table.get_item(Key={'PhoneNumber': phone_number})
+            if 'Item' not in existing_item:
+                # Phone number doesn't exist, insert the new item
+                table.put_item(Item=data)
+                logger.info(f"Inserted new item for phone number: {phone_number}")
+                return True
+            else:
+                logger.info(f"Skipped duplicate phone number: {phone_number}")
+        else:
+            logger.warning(f"Skipping file {key}: No PhoneNumber found in data")
 
     except UnicodeDecodeError:
-        logger.warning(f"Skipping file {key}: Not a UTF-8 encoded text file")
+        logger.warning(f"Skipping file {key}: Not a UTF-8 encoded file")
     except json.JSONDecodeError:
         logger.warning(f"Skipping file {key}: Not a valid JSON file")
     except ClientError as e:
@@ -101,7 +136,7 @@ def main():
             for obj in s3_objects:
                 if process_file(obj['Key']):
                     successful_imports += 1
-                if successful_imports % 100 == 0:
+                if successful_imports % 100 == 0 and successful_imports > 0:
                     logger.info(f"Processed {successful_imports} files so far...")
             
             logger.info(f"Processing complete. Successfully imported {successful_imports} out of {total_files} files.")
