@@ -1,6 +1,10 @@
+import json
+import os
 import boto3
 from botocore.exceptions import ClientError
-from bs4 import BeautifulSoup
+import requests
+import random
+import feedparser
 import logging
 from datetime import datetime
 
@@ -8,165 +12,135 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
-# Specify your AWS region here
-REGION_NAME = 'us-east-1'  # Ensure this is your bucket's region
-
-# Initialize AWS services with the specified region
-s3 = boto3.client('s3', region_name=REGION_NAME)
-dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
-table = dynamodb.Table('googlevoicetext')  # Your DynamoDB table name
-
 # S3 bucket details
-BUCKET_NAME = 'google-voice-data'  # Ensure this matches the actual bucket name
+BUCKET_NAME = 'XXXXXXXvoice-data'  # Make sure this is correct
+REGION_NAME = 'us-east-1'  # Replace with your actual region if different
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
-def process_message(log):
-    """Extract and return message data from a BeautifulSoup object."""
-    try:
-        timestamp = log.find('abbr', class_='dt')['title']
-        sender = log.find('cite', class_='sender vcard').find('a', class_='tel')
-        phone_number = sender['href'].replace('tel:', '') if sender else "Unknown"
-        message_text = log.find('q').get_text() if log.find('q') else "No message"
-        return {
-            'PhoneNumber': phone_number,
-            'Timestamp': timestamp,
-            'Message': message_text,
-            'Type': 'Text'
-        }
-    except AttributeError as e:
-        logger.error(f"Error processing message: {e}")
-        return None
+# Initialize AWS services
+try:
+    session = boto3.Session(region_name=REGION_NAME)
+    s3 = session.client('s3')
+    dynamodb = session.resource('dynamodb')
+    table = dynamodb.Table('DiscordBotData')  # Your DynamoDB table name
 
-def process_call_log(log):
-    """Extract and return call log data from a BeautifulSoup object."""
-    try:
-        timestamp = log.find('abbr', class_='published')['title']
-        phone_number = log.find('a', class_='tel')['href'].replace('tel:', '')
-        duration = log.find('abbr', class_='duration').get_text() if log.find('abbr', class_='duration') else "Unknown"
-        return {
-            'PhoneNumber': phone_number,
-            'Timestamp': timestamp,
-            'Duration': duration,
-            'Type': 'Received Call'
-        }
-    except AttributeError as e:
-        logger.error(f"Error processing call log: {e}")
-        return None
+    # Verify credentials
+    credentials = session.get_credentials()
+    logger.info(f"Access Key ID being used: {credentials.access_key[:5]}...")
 
-def insert_into_dynamodb(item):
-    """Insert an item into DynamoDB table."""
+    # Check AWS identity
+    sts = session.client('sts')
+    identity = sts.get_caller_identity()
+    logger.info(f"Using AWS identity: {identity['Arn']}")
+
+except Exception as e:
+    logger.error(f"Error initializing AWS services: {e}")
+    raise
+
+def list_s3_objects():
+    """List objects in the S3 bucket."""
     try:
-        table.put_item(Item=item)
-        logger.info(f"Inserted item: {item}")
+        logger.info(f"Attempting to list objects in bucket: {BUCKET_NAME}")
+        logger.info(f"Using region: {REGION_NAME}")
+        logger.info(f"S3 client: {s3}")
+        response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
+        logger.info(f"Response: {response}")
+        return response.get('Contents', [])
     except ClientError as e:
-        logger.error(f"Error inserting into DynamoDB: {e.response['Error']['Message']}")
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        logger.error(f"Error listing objects in bucket {BUCKET_NAME}. Error Code: {error_code}, Message: {error_message}")
+        if error_code == 'NoSuchBucket':
+            logger.error(f"The bucket {BUCKET_NAME} does not exist or you don't have permission to access it.")
+        elif error_code == 'AccessDenied':
+            logger.error(f"Access denied to bucket {BUCKET_NAME}. Check your permissions.")
+        return None
 
-def process_file(file_content, category):
-    """Process a single HTML file content and insert messages or calls into DynamoDB."""
+def get_random_media(bucket_name):
+    """Get a random media file from S3."""
+    objects = list_s3_objects()
+    if objects:
+        random_object = random.choice(objects)
+        return f"https://{bucket_name}.s3.amazonaws.com/{random_object['Key']}"
+    return None
+
+def fetch_hiphop_news():
+    """Fetch hip-hop news from RSS feed."""
+    rss_url = 'https://www.xxlmag.com/rss'  # Example RSS feed URL
     try:
-        soup = BeautifulSoup(file_content, 'html.parser')
-
-        if category == "Text":
-            chat_logs = soup.find_all('div', class_='message')
-            for log in chat_logs:
-                item = process_message(log)
-                if item:
-                    insert_into_dynamodb(item)
-        elif category == "Call":
-            call_logs = soup.find_all('div', class_='haudio')
-            for log in call_logs:
-                item = process_call_log(log)
-                if item:
-                    insert_into_dynamodb(item)
+        feed = feedparser.parse(rss_url)
+        articles = []
+        for entry in feed.entries[:5]:  # Get the latest 5 articles
+            articles.append({
+                'title': entry.title,
+                'link': entry.link
+            })
+        return articles
     except Exception as e:
-        logger.error(f"Error processing file content: {e}")
+        logger.error(f"Error fetching hip-hop news: {e}")
+        return []
 
-def parse_file_info(file_name):
-    """Parse the file name to extract phone number, category, and timestamp."""
-    try:
-        parts = file_name.split(" - ")
-        if len(parts) != 3:
-            logger.error(f"Unexpected file name format: {file_name}")
-            return None
+def lambda_handler(event, context):
+    """Lambda function handler."""
+    logger.info(f"Event received: {event}")
+    command = event.get('command', '')
 
-        number = parts[0]
-        category = parts[1]
-        date_str = parts[2].replace(".html", "").replace("_", ":")
-        
-        if category == "Text":
-            category_value = "Text"
-        elif category in ["Received", "Missed"]:
-            category_value = "Call"
+    if command == '/media':
+        media_url = get_random_media(BUCKET_NAME)
+        if media_url:
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'media_url': media_url})
+            }
         else:
-            logger.error(f"Unknown category in file name: {file_name}")
-            return None
-
+            return {
+                'statusCode': 404,
+                'body': json.dumps({'message': 'No media files found!'})
+            }
+    
+    elif command == '/news':
+        news_articles = fetch_hiphop_news()
         return {
-            'number': number,
-            'category': category_value,
-            'date': date_str
+            'statusCode': 200,
+            'body': json.dumps({'articles': news_articles})
         }
-    except Exception as e:
-        logger.error(f"Error parsing file info: {e}")
-        return None
 
-def list_all_s3_objects():
-    """List all objects in the S3 bucket with pagination."""
-    logger.info(f"Listing objects in bucket: {BUCKET_NAME}")  # Debug log for bucket name
-    continuation_token = None
-    all_objects = []
+    elif command.startswith('/info'):
+        user_id = event.get('user_id')
+        try:
+            table.put_item(Item={'UserId': user_id, 'Interaction': command})
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'message': 'Your interaction has been recorded!'})
+            }
+        except Exception as e:
+            logger.error(f"Error recording interaction: {e}")
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'message': 'Error recording interaction'})
+            }
 
-    try:
-        while True:
-            if continuation_token:
-                response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX, ContinuationToken=continuation_token)
-            else:
-                response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
-
-            if 'Contents' in response:
-                all_objects.extend(response['Contents'])
-                logger.info(f"Retrieved {len(response['Contents'])} objects.")  # Log number of objects retrieved
-            
-            # Check if there are more objects to retrieve
-            if response.get('IsTruncated'):  # If response is truncated
-                continuation_token = response.get('NextContinuationToken')
-            else:
-                break  # Exit the loop if no more objects
-
-    except ClientError as e:
-        logger.error(f"Error listing objects: {e}")
-
-    return all_objects
-
-def check_aws_identity():
-    """Check and log the current AWS identity."""
-    sts = boto3.client('sts', region_name=REGION_NAME)
-    try:
-        identity = sts.get_caller_identity()
-        logger.info(f"Using AWS identity: {identity['Arn']}")
-    except ClientError as e:
-        logger.error(f"Error getting caller identity: {e}")
+    return {
+        'statusCode': 400,
+        'body': json.dumps({'message': 'Unknown command!'})
+    }
 
 def main():
-    logger.info("Starting processing at %s", datetime.now())
-    check_aws_identity()
-    
+    logger.info(f"Starting processing at {datetime.now()}")
+    logger.info(f"Using bucket name: {BUCKET_NAME}")
+    logger.info(f"Using region: {REGION_NAME}")
+
     try:
-        s3_objects = list_all_s3_objects()
+        s3_objects = list_s3_objects()
         if s3_objects:
-            for obj in s3_objects:
-                file_name = obj['Key']
-                file_info = parse_file_info(file_name)
-                if file_info:
-                    response = s3.get_object(Bucket=BUCKET_NAME, Key=file_name)
-                    file_content = response['Body'].read().decode('utf-8')
-                    process_file(file_content, file_info['category'])
+            logger.info(f"Successfully listed {len(s3_objects)} objects in the S3 bucket.")
+            # Process your objects here
         else:
-            logger.info("No objects found in the S3 bucket.")
-    except ClientError as e:
+            logger.warning("No objects found in the S3 bucket or error occurred.")
+    except Exception as e:
         logger.error(f"Error processing S3 bucket: {e}")
     
-    logger.info("Finished processing at %s", datetime.now())
+    logger.info(f"Finished processing at {datetime.now()}")
 
 if __name__ == "__main__":
     main()
