@@ -24,7 +24,7 @@ try:
     session = boto3.Session(region_name=REGION_NAME)
     s3 = session.client('s3')
     dynamodb = session.resource('dynamodb')
-    table = dynamodb.Table('DiscordBotData')  # Your DynamoDB table name
+    table = dynamodb.Table('googlevoicetext')  # Your DynamoDB table name
 
     # Verify credentials
     credentials = session.get_credentials()
