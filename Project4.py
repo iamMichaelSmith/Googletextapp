@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 # S3 bucket details
-BUCKET_NAME = 'google-voice-data '
+BUCKET_NAME = 'google-voice-data'
 REGION_NAME = 'us-east-1'  # Replace with your actual region if different
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
