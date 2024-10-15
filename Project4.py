@@ -31,8 +31,8 @@ def process_message(log):
         return {
             'PhoneNumber': phone_number,
             'Timestamp': timestamp,
-            'Message': message_text,  # Include the message
-            'Type': 'Text'            # Include the type as 'Text'
+            'Message': message_text,
+            'Type': 'Text'
         }
     except AttributeError as e:
         logger.error(f"Error processing message: {e}")
@@ -48,7 +48,7 @@ def process_call_log(log):
             'PhoneNumber': phone_number,
             'Timestamp': timestamp,
             'Duration': duration,
-            'Type': 'Received Call'   # Include the type as 'Received Call'
+            'Type': 'Received Call'
         }
     except AttributeError as e:
         logger.error(f"Error processing call log: {e}")
@@ -58,7 +58,7 @@ def insert_into_dynamodb(item):
     """Insert an item into DynamoDB table."""
     try:
         table.put_item(Item=item)
-        logger.info(f"Inserted item: {item}")  # Log the inserted item
+        logger.info(f"Inserted item: {item}")
     except ClientError as e:
         logger.error(f"Error inserting into DynamoDB: {e.response['Error']['Message']}")
 
@@ -94,69 +94,66 @@ def parse_file_info(file_name):
         category = parts[1]
         date_str = parts[2].replace(".html", "").replace("_", ":")
         
-        # Determine if it's a Text or Call log
         if category == "Text":
             category_value = "Text"
-            received_value = "True"
-        elif category == "Received":
+        elif category in ["Received", "Missed"]:
             category_value = "Call"
-            received_value = "True"
-        elif category == "Missed":
-            category_value = "Call"
-            received_value = "False"
         else:
-            category_value = "Unknown"
-            received_value = "Null"
-    
-        # Convert date to ISO format
-        date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
-        date_iso = date_obj.isoformat()
+            logger.error(f"Unknown category in file name: {file_name}")
+            return None
 
         return {
-            'PhoneNumber': number,
-            'Category': category_value,
-            'Received': received_value,
-            'Timestamp': date_iso
+            'number': number,
+            'category': category_value,
+            'date': date_str
         }
     except Exception as e:
-        logger.error(f"Error parsing file name: {e}")
+        logger.error(f"Error parsing file info: {e}")
         return None
 
-def main():
-    """Main function to process all HTML files in the S3 bucket."""
-    start_time = datetime.now()
-    logger.info(f"Starting processing at {start_time}")
-
+def list_s3_objects():
+    """List objects in the S3 bucket."""
     try:
-        # List objects in the S3 bucket
-        paginator = s3.get_paginator('list_objects_v2')
-        pages = paginator.paginate(Bucket=BUCKET_NAME, Prefix=PREFIX)
+        response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
+        return response.get('Contents', [])
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'NoSuchBucket':
+            logger.error(f"The bucket {BUCKET_NAME} does not exist.")
+        elif e.response['Error']['Code'] == 'AccessDenied':
+            logger.error(f"Access denied to bucket {BUCKET_NAME}. Check your permissions.")
+        else:
+            logger.error(f"An error occurred while listing objects: {e}")
+        return None
 
-        for page in pages:
-            for obj in page.get('Contents', []):
-                if obj['Key'].endswith('.html'):
-                    logger.info(f"Processing file: {obj['Key']}")
-                    # Get the file content
-                    file_obj = s3.get_object(Bucket=BUCKET_NAME, Key=obj['Key'])
-                    file_content = file_obj['Body'].read()
+def check_aws_identity():
+    """Check and log the current AWS identity."""
+    sts = boto3.client('sts', region_name=REGION_NAME)
+    try:
+        identity = sts.get_caller_identity()
+        logger.info(f"Using AWS identity: {identity['Arn']}")
+    except ClientError as e:
+        logger.error(f"Error getting caller identity: {e}")
 
-                    # Extract just the file name
-                    file_name = os.path.basename(obj['Key'])
-                    logger.info(f"File name: {file_name}")
-
-                    # Parse the file name for categorization and timestamps
-                    data = parse_file_info(file_name)
-
-                    if data and data['Category'] == 'Text':
-                        process_file(file_content, 'Text')
-                    elif data and data['Category'] == 'Call':
-                        process_file(file_content, 'Call')
-    except Exception as e:
+def main():
+    logger.info("Starting processing at %s", datetime.now())
+    check_aws_identity()
+    
+    try:
+        s3_objects = list_s3_objects()
+        if s3_objects:
+            for obj in s3_objects:
+                file_name = obj['Key']
+                file_info = parse_file_info(file_name)
+                if file_info:
+                    response = s3.get_object(Bucket=BUCKET_NAME, Key=file_name)
+                    file_content = response['Body'].read().decode('utf-8')
+                    process_file(file_content, file_info['category'])
+        else:
+            logger.info("No objects found in the S3 bucket.")
+    except ClientError as e:
         logger.error(f"Error processing S3 bucket: {e}")
-
-    end_time = datetime.now()
-    logger.info(f"Finished processing at {end_time}")
-    logger.info(f"Total processing time: {end_time - start_time}")
+    
+    logger.info("Finished processing at %s", datetime.now())
 
 if __name__ == "__main__":
     main()
