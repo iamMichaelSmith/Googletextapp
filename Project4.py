@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 # Specify your AWS region here
-REGION_NAME = 'us-east-1'  # Your region
+REGION_NAME = 'us-east-1'  # Ensure this is your bucket's region
 
 # Initialize AWS services with the specified region
 s3 = boto3.client('s3', region_name=REGION_NAME)
@@ -18,7 +18,7 @@ dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
 table = dynamodb.Table('googlevoicetext')  # Your DynamoDB table name
 
 # S3 bucket details
-BUCKET_NAME = 'google-voice-data'  # Your actual bucket name
+BUCKET_NAME = 'google-voice-data'  # Ensure this matches the actual bucket name
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
 def process_message(log):
@@ -113,6 +113,7 @@ def parse_file_info(file_name):
 
 def list_s3_objects():
     """List objects in the S3 bucket."""
+    logger.info(f"Listing objects in bucket: {BUCKET_NAME}")  # Debug log for bucket name
     try:
         response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
         return response.get('Contents', [])
