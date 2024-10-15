@@ -17,7 +17,7 @@ dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
 table = dynamodb.Table('googlevoicetext')  # Your DynamoDB table name
 
 # S3 bucket details
-BUCKET_NAME = 'google-voice-data'  # Ensure this matches the actual bucket name
+BUCKET_NAME = 'newgoogledatabucket'  # Ensure this matches the actual bucket name
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
 def process_message(log):
