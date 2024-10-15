@@ -115,9 +115,7 @@ For projects that involve data processing or analysis of communication patterns,
     pip install boto3 requests feedparser
     pip install feedparser
     pip list
-
-
-
+    pip install --upgrade feedparser
     ```
 
     - **Install AWS CLI**:
