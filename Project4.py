@@ -7,13 +7,14 @@ import random
 import feedparser
 import logging
 from datetime import datetime
+from boto3.dynamodb.conditions import Attr
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
 # S3 bucket details
-BUCKET_NAME = 'XXXXXXXvoice-data'  # Make sure this is correct
+BUCKET_NAME = 'google-voice-data '
 REGION_NAME = 'us-east-1'  # Replace with your actual region if different
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
@@ -41,100 +42,69 @@ def list_s3_objects():
     """List objects in the S3 bucket."""
     try:
         logger.info(f"Attempting to list objects in bucket: {BUCKET_NAME}")
-        logger.info(f"Using region: {REGION_NAME}")
-        logger.info(f"S3 client: {s3}")
-        response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
-        logger.info(f"Response: {response}")
-        return response.get('Contents', [])
+        all_objects = []
+        paginator = s3.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket=BUCKET_NAME, Prefix=PREFIX):
+            if 'Contents' in page:
+                all_objects.extend(page['Contents'])
+        logger.info(f"Found {len(all_objects)} objects in the bucket.")
+        return all_objects
     except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        logger.error(f"Error listing objects in bucket {BUCKET_NAME}. Error Code: {error_code}, Message: {error_message}")
-        if error_code == 'NoSuchBucket':
-            logger.error(f"The bucket {BUCKET_NAME} does not exist or you don't have permission to access it.")
-        elif error_code == 'AccessDenied':
-            logger.error(f"Access denied to bucket {BUCKET_NAME}. Check your permissions.")
+        logger.error(f"Error listing objects in bucket {BUCKET_NAME}: {e}")
         return None
 
-def get_random_media(bucket_name):
-    """Get a random media file from S3."""
-    objects = list_s3_objects()
-    if objects:
-        random_object = random.choice(objects)
-        return f"https://{bucket_name}.s3.amazonaws.com/{random_object['Key']}"
-    return None
-
-def fetch_hiphop_news():
-    """Fetch hip-hop news from RSS feed."""
-    rss_url = 'https://www.xxlmag.com/rss'  # Example RSS feed URL
+def process_file(key):
+    """Process a single file from S3."""
     try:
-        feed = feedparser.parse(rss_url)
-        articles = []
-        for entry in feed.entries[:5]:  # Get the latest 5 articles
-            articles.append({
-                'title': entry.title,
-                'link': entry.link
-            })
-        return articles
-    except Exception as e:
-        logger.error(f"Error fetching hip-hop news: {e}")
-        return []
+        response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
+        content_type = response['ContentType']
 
-def lambda_handler(event, context):
-    """Lambda function handler."""
-    logger.info(f"Event received: {event}")
-    command = event.get('command', '')
-
-    if command == '/media':
-        media_url = get_random_media(BUCKET_NAME)
-        if media_url:
-            return {
-                'statusCode': 200,
-                'body': json.dumps({'media_url': media_url})
-            }
+        if 'text' in content_type or 'json' in content_type:
+            file_content = response['Body'].read().decode('utf-8')
+            data = json.loads(file_content)
+            
+            # Check if the phone number already exists
+            phone_number = data.get('PhoneNumber')
+            if phone_number:
+                existing_item = table.get_item(Key={'PhoneNumber': phone_number})
+                if 'Item' not in existing_item:
+                    # Phone number doesn't exist, insert the new item
+                    table.put_item(Item=data)
+                    logger.info(f"Inserted new item for phone number: {phone_number}")
+                    return True
+                else:
+                    logger.info(f"Skipped duplicate phone number: {phone_number}")
+            else:
+                logger.warning(f"Skipping file {key}: No PhoneNumber found in data")
         else:
-            return {
-                'statusCode': 404,
-                'body': json.dumps({'message': 'No media files found!'})
-            }
+            logger.warning(f"Skipping non-text file: {key}")
+
+    except UnicodeDecodeError:
+        logger.warning(f"Skipping file {key}: Not a UTF-8 encoded text file")
+    except json.JSONDecodeError:
+        logger.warning(f"Skipping file {key}: Not a valid JSON file")
+    except ClientError as e:
+        logger.warning(f"Error accessing file {key}: {e}")
+    except Exception as e:
+        logger.warning(f"Unexpected error processing file {key}: {e}")
     
-    elif command == '/news':
-        news_articles = fetch_hiphop_news()
-        return {
-            'statusCode': 200,
-            'body': json.dumps({'articles': news_articles})
-        }
-
-    elif command.startswith('/info'):
-        user_id = event.get('user_id')
-        try:
-            table.put_item(Item={'UserId': user_id, 'Interaction': command})
-            return {
-                'statusCode': 200,
-                'body': json.dumps({'message': 'Your interaction has been recorded!'})
-            }
-        except Exception as e:
-            logger.error(f"Error recording interaction: {e}")
-            return {
-                'statusCode': 500,
-                'body': json.dumps({'message': 'Error recording interaction'})
-            }
-
-    return {
-        'statusCode': 400,
-        'body': json.dumps({'message': 'Unknown command!'})
-    }
+    return False
 
 def main():
     logger.info(f"Starting processing at {datetime.now()}")
-    logger.info(f"Using bucket name: {BUCKET_NAME}")
-    logger.info(f"Using region: {REGION_NAME}")
-
+    
     try:
         s3_objects = list_s3_objects()
         if s3_objects:
-            logger.info(f"Successfully listed {len(s3_objects)} objects in the S3 bucket.")
-            # Process your objects here
+            total_files = len(s3_objects)
+            successful_imports = 0
+            for obj in s3_objects:
+                if process_file(obj['Key']):
+                    successful_imports += 1
+                if successful_imports % 100 == 0:
+                    logger.info(f"Processed {successful_imports} files so far...")
+            
+            logger.info(f"Processing complete. Successfully imported {successful_imports} out of {total_files} files.")
         else:
             logger.warning("No objects found in the S3 bucket or error occurred.")
     except Exception as e:
