@@ -26,10 +26,10 @@ def process_message(log):
     try:
         timestamp = log.find('abbr', class_='dt')['title']
         sender = log.find('cite', class_='sender vcard').find('a', class_='tel')
-        phone_number = sender['href'].replace('tel:', '') if sender else "Unknown"  # Define phone_number
+        phone_number = sender['href'].replace('tel:', '') if sender else "Unknown"
         message_text = log.find('q').get_text() if log.find('q') else "No message"
         return {
-            'PhoneNumber': phone_number,  # Primary key for DynamoDB
+            'PhoneNumber': phone_number,
             'Timestamp': timestamp,
             'Message': message_text,
             'Type': 'Text'
@@ -42,10 +42,10 @@ def process_call_log(log):
     """Extract and return call log data from a BeautifulSoup object."""
     try:
         timestamp = log.find('abbr', class_='published')['title']
-        phone_number = log.find('a', class_='tel')['href'].replace('tel:', '')  # Define phone_number
+        phone_number = log.find('a', class_='tel')['href'].replace('tel:', '')
         duration = log.find('abbr', class_='duration').get_text() if log.find('abbr', class_='duration') else "Unknown"
         return {
-            'PhoneNumber': phone_number,  # Primary key for DynamoDB
+            'PhoneNumber': phone_number,
             'Timestamp': timestamp,
             'Duration': duration,
             'Type': 'Received Call'
@@ -103,7 +103,7 @@ def parse_file_info(file_name):
             return None
 
         return {
-            'number': number,  # This should be passed and used later for the phone number
+            'number': number,
             'category': category_value,
             'date': date_str
         }
@@ -113,7 +113,7 @@ def parse_file_info(file_name):
 
 def list_s3_objects():
     """List objects in the S3 bucket."""
-    logger.info(f"Listing objects in bucket: {BUCKET_NAME}")  # Debug log for bucket name
+    logger.info(f"Listing objects in bucket: {BUCKET_NAME}")
     try:
         response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
         return response.get('Contents', [])
@@ -138,22 +138,32 @@ def check_aws_identity():
 def main():
     logger.info("Starting processing at %s", datetime.now())
     check_aws_identity()
-    
+
     try:
         s3_objects = list_s3_objects()
         if s3_objects:
             for obj in s3_objects:
                 file_name = obj['Key']
-                file_info = parse_file_info(file_name)
-                if file_info:
-                    response = s3.get_object(Bucket=BUCKET_NAME, Key=file_name)
-                    file_content = response['Body'].read().decode('utf-8')
-                    process_file(file_content, file_info['category'])
+
+                # Only process HTML files, skip others (e.g., MP3, image files)
+                if file_name.endswith('.html'):
+                    file_info = parse_file_info(file_name)
+                    if file_info:
+                        response = s3.get_object(Bucket=BUCKET_NAME, Key=file_name)
+                        file_content = response['Body'].read()
+
+                        try:
+                            file_content = file_content.decode('utf-8')
+                            process_file(file_content, file_info['category'])
+                        except UnicodeDecodeError:
+                            logger.error(f"Cannot decode file: {file_name}. It might not be a valid text file.")
+                else:
+                    logger.warning(f"Skipping unknown file type: {file_name}")
         else:
             logger.info("No objects found in the S3 bucket.")
     except ClientError as e:
         logger.error(f"Error processing S3 bucket: {e}")
-    
+
     logger.info("Finished processing at %s", datetime.now())
 
 if __name__ == "__main__":
