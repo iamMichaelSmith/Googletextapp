@@ -3,7 +3,6 @@ from botocore.exceptions import ClientError
 from bs4 import BeautifulSoup
 import logging
 from datetime import datetime
-import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -111,20 +110,33 @@ def parse_file_info(file_name):
         logger.error(f"Error parsing file info: {e}")
         return None
 
-def list_s3_objects():
-    """List objects in the S3 bucket."""
+def list_all_s3_objects():
+    """List all objects in the S3 bucket with pagination."""
     logger.info(f"Listing objects in bucket: {BUCKET_NAME}")  # Debug log for bucket name
+    continuation_token = None
+    all_objects = []
+
     try:
-        response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
-        return response.get('Contents', [])
+        while True:
+            if continuation_token:
+                response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX, ContinuationToken=continuation_token)
+            else:
+                response = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
+
+            if 'Contents' in response:
+                all_objects.extend(response['Contents'])
+                logger.info(f"Retrieved {len(response['Contents'])} objects.")  # Log number of objects retrieved
+            
+            # Check if there are more objects to retrieve
+            if response.get('IsTruncated'):  # If response is truncated
+                continuation_token = response.get('NextContinuationToken')
+            else:
+                break  # Exit the loop if no more objects
+
     except ClientError as e:
-        if e.response['Error']['Code'] == 'NoSuchBucket':
-            logger.error(f"The bucket {BUCKET_NAME} does not exist.")
-        elif e.response['Error']['Code'] == 'AccessDenied':
-            logger.error(f"Access denied to bucket {BUCKET_NAME}. Check your permissions.")
-        else:
-            logger.error(f"An error occurred while listing objects: {e}")
-        return None
+        logger.error(f"Error listing objects: {e}")
+
+    return all_objects
 
 def check_aws_identity():
     """Check and log the current AWS identity."""
@@ -140,7 +152,7 @@ def main():
     check_aws_identity()
     
     try:
-        s3_objects = list_s3_objects()
+        s3_objects = list_all_s3_objects()
         if s3_objects:
             for obj in s3_objects:
                 file_name = obj['Key']
