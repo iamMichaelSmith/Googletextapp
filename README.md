@@ -108,14 +108,20 @@ For projects that involve data processing or analysis of communication patterns,
     pip3 install boto3 beautifulsoup4
     ```
 
+    - **Install AWS CLI**:
+    8. Use the following command to install AWS CLI to your instance:
+    ```bash
+    pip install awscli --upgrade
+    ```
+
 - **Clone the GitHub repository**:
-    8. Use the following command to clone the GitHub repository to your instance:
+    9. Use the following command to clone the GitHub repository to your instance:
     ```bash
     git clone https://github.com/your-username/your-repository.git
     ```
 
 - **Navigate into the cloned repository**:
-    9. Use the following command to Navigate into the cloned repository in your instance:
+    10. Use the following command to Navigate into the cloned repository in your instance:
      ```bash
      cd your-repository-name
      ```
