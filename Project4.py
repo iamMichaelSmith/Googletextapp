@@ -15,7 +15,7 @@ REGION_NAME = 'us-east-1'  # Your region
 # Initialize AWS services with the specified region
 s3 = boto3.client('s3', region_name=REGION_NAME)
 dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
-table = dynamodb.Table('TextMessages')  # Your DynamoDB table name
+table = dynamodb.Table('googlevoicetext')  # Your DynamoDB table name
 
 # S3 bucket details
 BUCKET_NAME = 'google-voice-data'  # Your actual bucket name
