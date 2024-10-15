@@ -9,13 +9,16 @@ import os
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
-# Initialize AWS services
-s3 = boto3.client('s3')
-dynamodb = boto3.resource('dynamodb')
+# Specify your AWS region here
+REGION_NAME = 'us-east-1'  # Your region
+
+# Initialize AWS services with the specified region
+s3 = boto3.client('s3', region_name=REGION_NAME)
+dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
 table = dynamodb.Table('TextMessages')  # Your DynamoDB table name
 
 # S3 bucket details
-BUCKET_NAME = 'XXXXXXXXXXXXXXXXX'
+BUCKET_NAME = 'google-voice-data'  # Your actual bucket name
 PREFIX = ''  # Leave this empty if your files are in the root of the bucket
 
 def process_message(log):
@@ -28,8 +31,8 @@ def process_message(log):
         return {
             'PhoneNumber': phone_number,
             'Timestamp': timestamp,
-            'Message': message_text,
-            'Type': 'Text'
+            'Message': message_text,  # Include the message
+            'Type': 'Text'            # Include the type as 'Text'
         }
     except AttributeError as e:
         logger.error(f"Error processing message: {e}")
@@ -45,7 +48,7 @@ def process_call_log(log):
             'PhoneNumber': phone_number,
             'Timestamp': timestamp,
             'Duration': duration,
-            'Type': 'Received Call'
+            'Type': 'Received Call'   # Include the type as 'Received Call'
         }
     except AttributeError as e:
         logger.error(f"Error processing call log: {e}")
@@ -55,6 +58,7 @@ def insert_into_dynamodb(item):
     """Insert an item into DynamoDB table."""
     try:
         table.put_item(Item=item)
+        logger.info(f"Inserted item: {item}")  # Log the inserted item
     except ClientError as e:
         logger.error(f"Error inserting into DynamoDB: {e.response['Error']['Message']}")
 
