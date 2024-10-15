@@ -1,9 +1,6 @@
 import os
 import boto3
 from botocore.exceptions import ClientError
-import requests
-import random
-import feedparser
 import logging
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -53,9 +50,10 @@ def list_s3_objects():
         return None
 
 def extract_info_from_html(html_content, key):
-    soup = BeautifulSoup(html_content, 'html.parser')
-    
     # Extract phone number from filename
+
+    
+    soup = BeautifulSoup(html_content, 'html.parser')
     
     # Extract timestamp
     timestamp_elem = soup.find('div', class_='timestamp')
@@ -66,29 +64,37 @@ def extract_info_from_html(html_content, key):
     duration_elem = soup.find('div', class_='duration')
     
     if message_elem:
-        content = message_elem.text.strip()
-        call_type = 'Text'
+        message = message_elem.text.strip()
+        category = 'Text'
+        duration = None
     elif duration_elem:
-        content = duration_elem.text.strip()
-        call_type = 'Call'
+        message = None
+        category = 'Call'
+        duration = duration_elem.text.strip()
     else:
-        content = None
-        call_type = 'Unknown'
+        message = None
+        category = 'Unknown'
+        duration = None
+    
+    # Determine if received or not (you might need to adjust this based on your HTML structure)
+    received = 'Received' in key
     
     return {
         'PhoneNumber': phone_number,
         'Timestamp': timestamp,
-        'Content': content,
-        'Type': call_type
+        'Category': category,
+        'Duration': duration,
+        'Message': message,
+        'Received': received
     }
 
 def process_file(key):
     """Process a single file from S3."""
     try:
         response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
-        content_type = response.get('ContentType', '')
+        content_type = response.get('ContentType', '').lower()
 
-        if 'html' in content_type.lower():
+        if 'html' in content_type:
             file_content = response['Body'].read().decode('utf-8')
             data = extract_info_from_html(file_content, key)
             
@@ -97,20 +103,8 @@ def process_file(key):
                 return False
             
             # Update DynamoDB
-            table.update_item(
-                Key={'PhoneNumber': data['PhoneNumber']},
-                UpdateExpression="SET #ts = list_append(if_not_exists(#ts, :empty_list), :new_ts)",
-                ExpressionAttributeNames={'#ts': 'Timestamps'},
-                ExpressionAttributeValues={
-                    ':new_ts': [{
-                        'Timestamp': data['Timestamp'],
-                        'Content': data['Content'],
-                        'Type': data['Type']
-                    }],
-                    ':empty_list': []
-                }
-            )
-            logger.info(f"Processed and updated data for phone number: {data['PhoneNumber']}")
+            table.put_item(Item=data)
+            logger.info(f"Processed and updated data for PhoneNumber: {data['PhoneNumber']}")
             return True
         else:
             logger.warning(f"Skipping non-HTML file: {key}")
