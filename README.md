@@ -163,11 +163,11 @@ For projects that involve data processing or analysis of communication patterns,
     optimizing my usage of DynamoDB for efficient storage and retrieval of parsed data.</p>
 
   - **Core Use of Data Parsing in Business**
-        This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to.
+    This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to.
         
      
     - **Repurpose old and new clients**: By structuring data efficiently, we can better understand client behavior and preferences, allowing us to re-engage them with targeted campaigns.
     - **Create text lists for promotions**: With properly parsed and organized data, generating contact lists for promotions becomes easier, helping us reach the right audience at the right time.
     - **Increase sales**: Leveraging the insights from parsed data allows us to offer more personalized services, improving client retention and ultimately driving sales.
     
-            This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.
+    - **This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.**
