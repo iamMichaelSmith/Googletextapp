@@ -99,9 +99,9 @@ For projects that involve data processing or analysis of communication patterns,
       ```bash
       sudo apt install -y nodejs
       ```
-
-     - **Install Boto3**:
-    4. Use the following command to install Boto3 to your instance:
+      
+ - **Install latest version of Install Boto3**:
+    4. Use the following command to install Install Boto3 to your instance:
       ```bash
       pip install boto3
       ```
