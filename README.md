@@ -154,7 +154,11 @@ For projects that involve data processing or analysis of communication patterns,
      python3 GoogleTakeout.py
      ```
 
-     You will start seeing all of your text and call data loading and sorting in your CLI to DynamoDB
+
+
+     **You will start seeing all of your text and call data loading and sorting in your CLI to DynamoDB**
+
+
 
 
     <h1>Project Reflections: Challenges and Learning with New Tools</h1>
