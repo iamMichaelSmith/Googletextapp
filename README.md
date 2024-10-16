@@ -1,4 +1,7 @@
-<a href="default.asp"><img src="https://ibb.co/tQ5WmKh"</a>
+<a href="default.asp">
+  <img src="https://ibb.co/tQ5WmKh" alt="Image description" />
+</a>
+
 # Google Voice Text Application Setup
 
 ## Overview
