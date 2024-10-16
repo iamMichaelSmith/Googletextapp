@@ -162,13 +162,12 @@ For projects that involve data processing or analysis of communication patterns,
      Thankfully, tools like <strong>ChatGPT-4</strong> and <strong>Amazon Q Developer</strong> were invaluable. ChatGPT-4 helped clarify concepts I struggled with and provided quick solutions to coding errors or new techniques I needed to understand on the fly. Additionally, Amazon Q Developer proved to be an excellent resource for navigating AWS services and optimizing my usage of DynamoDB for efficient storage and retrieval of parsed data.</p>
 
         <h2>Core Use of Data Parsing in Business</h2>
-        <p>This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to:</p>
+        <p>This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to.
         
-        <ul>
-            <li><strong>Repurpose old and new clients:</strong> By structuring data efficiently, we can better understand client behavior and preferences, allowing us to re-engage them with targeted campaigns.</li>
-            <li><strong>Create text lists for promotions:</strong> With properly parsed and organized data, generating contact lists for promotions becomes easier, helping us reach the right audience at the right time.</li>
-            <li><strong>Increase sales:</strong> Leveraging the insights from parsed data allows us to offer more personalized services, improving client retention and ultimately driving sales.</li>
-        </ul>
+     
+            <strong>Repurpose old and new clients:</strong> By structuring data efficiently, we can better understand client behavior and preferences, allowing us to re-engage them with targeted campaigns.
+            <strong>Create text lists for promotions:</strong> With properly parsed and organized data, generating contact lists for promotions becomes easier, helping us reach the right audience at the right time.
+            <strong>Increase sales:</strong> Leveraging the insights from parsed data allows us to offer more personalized services, improving client retention and ultimately driving sales.
+    
+            This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.</p>
 
-        <p>This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.</p>
-    </div>
