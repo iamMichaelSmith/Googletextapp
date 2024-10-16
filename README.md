@@ -123,11 +123,17 @@ For projects that involve data processing or analysis of communication patterns,
     ```bash
     pip3 install boto3 beautifulsoup4
     ```
-    
-    - **Install AWS CLI**:
-    8. Use the following command to install AWS CLI to your instance:
+
+- **Install Beautiful Soup**:
+    7. Use the following command to install Beautiful Soup to your instance:
     ```bash
-    pip install awscli --upgrade
+    pip3 install boto3 beautifulsoup4
+    ```
+
+   - **Install install AWSCLI**:
+    7. Use the following command to install install AWSCLI to your instance:
+    ```bash
+    pip install awscli
     ```
 
 - **Clone the GitHub repository**:
