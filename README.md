@@ -130,7 +130,7 @@ For projects that involve data processing or analysis of communication patterns,
     pip3 install boto3 beautifulsoup4
     ```
 
-   - **Install install AWSCLI**:
+- **Install install AWSCLI**:
     7. Use the following command to install install AWSCLI to your instance:
     ```bash
     pip install awscli
