@@ -162,7 +162,7 @@ For projects that involve data processing or analysis of communication patterns,
      Thankfully, tools like <strong>ChatGPT-4</strong> and <strong>Amazon Q Developer</strong> were invaluable. ChatGPT-4 helped clarify concepts I struggled with and provided quick solutions to coding errors or new techniques I needed to understand on the fly. Additionally, Amazon Q Developer proved to be an excellent resource for navigating AWS services and 
     optimizing my usage of DynamoDB for efficient storage and retrieval of parsed data.</p>
 
-  - **Core Use of Data Parsing in Business**
+- **Core Use of Data Parsing in Business**
     This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to.
         
      
