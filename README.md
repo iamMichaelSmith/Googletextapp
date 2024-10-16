@@ -1,8 +1,4 @@
-<a href="default.asp">
-  <img src="https://i.ibb.co/tQ5WmKh.jpg" alt="Google Voice Text Application Setup" />
-</a>
-
-
+<a href="https://ibb.co/tQ5WmKh"><img src="https://i.ibb.co/ckd7g3v/Dynamo-DB-Table-Creation-Google-text-app-Diagram.png" alt="Dynamo-DB-Table-Creation-Google-text-app-Diagram" border="0"></a>
 # Google Voice Text Application Setup
 
 ## Overview
