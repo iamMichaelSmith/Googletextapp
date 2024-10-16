@@ -157,54 +157,7 @@ For projects that involve data processing or analysis of communication patterns,
      You will start seeing all of your text and call data loading and sorting in your CLI to DynamoDB
 
 
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Reflections</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            margin: auto;
-            max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            font-size: 2em;
-        }
-        h2 {
-            color: #555;
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-        p {
-            color: #666;
-            font-size: 1.1em;
-        }
-        ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        ul li {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h1>Project Reflections: Challenges and Learning with New Tools</h1>
+  <h1>Project Reflections: Challenges and Learning with New Tools</h1>
         <p>Throughout this project, one of the main challenges I faced was implementing new coding techniques and working with tools that were outside of my usual stack. Adapting to new programming paradigms while parsing large datasets proved to be a learning curve, especially when dealing with the complexities of structured and unstructured data.</p>
 
         <p>Thankfully, tools like <strong>ChatGPT-4</strong> and <strong>Amazon Q Developer</strong> were invaluable. ChatGPT-4 helped clarify concepts I struggled with and provided quick solutions to coding errors or new techniques I needed to understand on the fly. Additionally, Amazon Q Developer proved to be an excellent resource for navigating AWS services and optimizing my usage of DynamoDB for efficient storage and retrieval of parsed data.</p>
@@ -220,7 +173,3 @@ For projects that involve data processing or analysis of communication patterns,
 
         <p>This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.</p>
     </div>
-
-</body>
-</html>
-
