@@ -108,16 +108,7 @@ For projects that involve data processing or analysis of communication patterns,
     ```bash
     pip3 install boto3 beautifulsoup4
     ```
-
-    - **Install Parse Feeder**:
-    7. Use the following command to install Parsefeeder to your instance:
-    ```bash
-    pip install boto3 requests feedparser
-    pip install feedparser
-    pip list
-    pip install --upgrade feedparser
-    ```
-
+    
     - **Install AWS CLI**:
     8. Use the following command to install AWS CLI to your instance:
     ```bash
@@ -136,3 +127,10 @@ For projects that involve data processing or analysis of communication patterns,
      cd your-repository-name
      ```
 
+- **Run Code from the cloned repository**:
+    10. Use the following command to run the python code on your instance:
+     ```bash
+     python3 GoogleTakeout.py
+     ```
+
+     You will start seeing all of your text and call data loading and sorting in your CLI to DynamoDB
