@@ -88,7 +88,7 @@ For projects that involve data processing or analysis of communication patterns,
   sudo apt update && sudo apt upgrade -y
   ```
 
-  - **activate virtual enviroment on your instance**:
+- **activate virtual enviroment on your instance**:
   4. Use the following command to activate virtual enviroment on your instance:
     ```bash
   source ~/awsenv/bin/activate
