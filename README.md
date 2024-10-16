@@ -89,7 +89,7 @@ For projects that involve data processing or analysis of communication patterns,
   ```
 
   - **activate virtual enviroment on your instance**:
-   3. Use the following command to activate virtual enviroment on your instance:
+  4. Use the following command to activate virtual enviroment on your instance:
     ```bash
   source ~/awsenv/bin/activate
     ```
@@ -101,13 +101,13 @@ For projects that involve data processing or analysis of communication patterns,
       ```
       
  - **Install latest version of Install Boto3**:
-    4. Use the following command to install Install Boto3 to your instance:
+    5. Use the following command to install Install Boto3 to your instance:
       ```bash
       pip install boto3
       ```
 
  - **Install latest version of Python**:
-    5. Use the following command to install Python to your instance:
+    6. Use the following command to install Python to your instance:
       ```bash
       sudo apt install -y python3 python3-pip
       ```
@@ -125,7 +125,7 @@ For projects that involve data processing or analysis of communication patterns,
     ```
 
 - **Install Beautiful Soup**:
-    7. Use the following command to install Beautiful Soup to your instance:
+    8. Use the following command to install Beautiful Soup to your instance:
     ```bash
     pip3 install boto3 beautifulsoup4
     ```
@@ -149,7 +149,7 @@ For projects that involve data processing or analysis of communication patterns,
      ```
 
 - **Run Code from the cloned repository**:
-    10. Use the following command to run the python code on your instance:
+    11. Use the following command to run the python code on your instance:
      ```bash
      python3 GoogleTakeout.py
      ```
