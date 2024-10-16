@@ -88,10 +88,22 @@ For projects that involve data processing or analysis of communication patterns,
   sudo apt update && sudo apt upgrade -y
   ```
 
+  - **activate virtual enviroment on your instance**:
+   3. Use the following command to activate virtual enviroment on your instance:
+    ```bash
+  source ~/awsenv/bin/activate
+    ```
+
  - **Install latest version of Nodejs**:
     4. Use the following command to install Nodejs to your instance:
+      ```bash
+      sudo apt install -y nodejs
+      ```
+
+     - **Install Boto3**:
+    4. Use the following command to install Boto3 to your instance:
      ```bash
-     sudo apt install -y nodejs
+     pip install boto3
      ```
 
  - **Install latest version of Python**:
