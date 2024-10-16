@@ -102,9 +102,9 @@ For projects that involve data processing or analysis of communication patterns,
 
      - **Install Boto3**:
     4. Use the following command to install Boto3 to your instance:
-     ```bash
-     pip install boto3
-     ```
+      ```bash
+      pip install boto3
+      ```
 
  - **Install latest version of Python**:
     5. Use the following command to install Python to your instance:
