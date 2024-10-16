@@ -33,9 +33,14 @@ For projects that involve data processing or analysis of communication patterns,
 - **Create Table**:
   1. Click on **Create table**.
   2. Enter the **Table name**: `googlevoicetext`.
-  3. Set the **Primary key** (e.g., `id` of type String).
-  4. Configure additional settings as necessary (e.g., provisioned read/write capacity).
-  5. Click **Create** to finalize the creation of the table.
+  3. Set the **Primary key** String > PhoneNumber.
+  4. Set the **Sort Key key** String > Time Stamp.
+  5. Configure additional settings as necessary (e.g., provisioned read/write capacity).
+  6. Click **Create** to finalize the creation of the table.
+  7. Once Done, Click on "googlevoicetext" table and click "Explore table items"
+  8. Select "Create item" and then "Add new attribute"
+  9. Add "String > Message, String > Type. This will allow you to parse these attributes to DynamoDB.
+  10. Save.
 
 ### 2. Create EC2 Instance: `google textapp`
 - **Access EC2 Dashboard**:
@@ -49,12 +54,10 @@ For projects that involve data processing or analysis of communication patterns,
   5. Add **Storage** (default is usually sufficient).
   6. **Configure Security Group**:
      - Allow SSH access (port 22) from your IP.
-     - Add any additional rules for your application (e.g., HTTP, HTTPS).
   7. Review your settings and click **Launch**.
   8. **Create or select a key pair** (e.g., `googletextapp.pem`) to access your instance.
   9. Click **Launch Instances** to finalize.
   10. Create IAM Role for EC2 to have full access to Dynamo DB and S3
-
 
 
 ### 3. Create S3 Bucket: `google-voice-data`
