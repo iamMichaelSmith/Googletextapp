@@ -157,17 +157,17 @@ For projects that involve data processing or analysis of communication patterns,
      You will start seeing all of your text and call data loading and sorting in your CLI to DynamoDB
 
 
-  <h1>Project Reflections: Challenges and Learning with New Tools</h1>
-  <p>Throughout this project, one of the main challenges I faced was implementing new coding techniques and working with tools that were outside of my usual stack. Adapting to new programming paradigms while parsing large datasets proved to be a learning curve, especially when dealing with the complexities of structured and unstructured data.
-     Thankfully, tools like <strong>ChatGPT-4</strong> and <strong>Amazon Q Developer</strong> were invaluable. ChatGPT-4 helped clarify concepts I struggled with and provided quick solutions to coding errors or new techniques I needed to understand on the fly. Additionally, Amazon Q Developer proved to be an excellent resource for navigating AWS services and optimizing my usage of DynamoDB for efficient storage and retrieval of parsed data.</p>
+    <h1>Project Reflections: Challenges and Learning with New Tools</h1>
+    <p>Throughout this project, one of the main challenges I faced was implementing new coding techniques and working with tools that were outside of my usual stack. Adapting to new programming paradigms while parsing large datasets proved to be a learning curve, especially when dealing with the complexities of structured and unstructured data.
+     Thankfully, tools like <strong>ChatGPT-4</strong> and <strong>Amazon Q Developer</strong> were invaluable. ChatGPT-4 helped clarify concepts I struggled with and provided quick solutions to coding errors or new techniques I needed to understand on the fly. Additionally, Amazon Q Developer proved to be an excellent resource for navigating AWS services and 
+    optimizing my usage of DynamoDB for efficient storage and retrieval of parsed data.</p>
 
-        <h2>Core Use of Data Parsing in Business</h2>
-        <p>This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to.</p>
+  - **Core Use of Data Parsing in Business**
+        This project wasn’t just about overcoming technical challenges. The real power of parsing large volumes of data lies in what it can do for a business. As a company, being able to automatically organize and process client data allows us to.
         
      
-            <strong>Repurpose old and new clients:</strong> By structuring data efficiently, we can better understand client behavior and preferences, allowing us to re-engage them with targeted campaigns.
-            <strong>Create text lists for promotions:</strong> With properly parsed and organized data, generating contact lists for promotions becomes easier, helping us reach the right audience at the right time.
-            <strong>Increase sales:</strong> Leveraging the insights from parsed data allows us to offer more personalized services, improving client retention and ultimately driving sales.
+    - **Repurpose old and new clients**: By structuring data efficiently, we can better understand client behavior and preferences, allowing us to re-engage them with targeted campaigns.
+    - **Create text lists for promotions**: With properly parsed and organized data, generating contact lists for promotions becomes easier, helping us reach the right audience at the right time.
+    - **Increase sales**: Leveraging the insights from parsed data allows us to offer more personalized services, improving client retention and ultimately driving sales.
     
-            This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.</p>
-
+            This project reinforced the importance of data-driven decision-making and how automating processes like this can have a tangible impact on business outcomes.
